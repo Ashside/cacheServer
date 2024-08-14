@@ -1,0 +1,12 @@
+### GET request to example server
+PUT http://localhost:12345/cache/testKey
+
+{
+  "value": "testValue"
+}
+
+
+
+
+
+###
