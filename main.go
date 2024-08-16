@@ -3,10 +3,11 @@ package main
 import (
 	"cacheServer/cache"
 	"cacheServer/http"
+	"cacheServer/tcp"
 )
 
 func main() {
 	c := cache.New("inmemory")
-	s := http.New(c)
-	s.Listen()
+	go tcp.New(c).Listen()
+	http.New(c).Listen()
 }
