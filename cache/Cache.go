@@ -1,6 +1,8 @@
 package cache
 
-import "log"
+import (
+	"log"
+)
 
 type Cache interface {
 	Set(string, []byte) error
@@ -13,6 +15,9 @@ func New(t string) Cache {
 	var c Cache
 	if t == "inmemory" {
 		c = newInMemoryCache()
+	}
+	if t == "rocksdb" {
+		c = NewRocksdbCache()
 	}
 	if c == nil {
 		panic("unknown cache type " + t)
