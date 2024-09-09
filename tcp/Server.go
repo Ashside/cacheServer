@@ -27,22 +27,32 @@ func (s *Server) Listen() {
 }
 
 func (s *Server) get(conn net.Conn, r *bufio.Reader) error {
+	log.Println("get")
+
 	key, err := s.readKey(r)
 	if err != nil {
 		return err
 	}
 	value, err := s.Get(key)
+	log.Println("get key:", key)
+	log.Println("get value:", value)
+
 	return sendResponse(value, err, conn)
 
 }
 
 func (s *Server) set(conn net.Conn, r *bufio.Reader) error {
+	log.Println("set")
 	key, value, err := s.readKeyAndValue(r)
 	if err != nil {
 		return err
 
 	}
 	err = s.Set(key, value)
+
+	log.Println("set key:", key)
+	log.Println("set value:", value)
+
 	return sendResponse(nil, err, conn)
 }
 
@@ -60,7 +70,7 @@ func (s *Server) process(conn net.Conn) {
 	defer func(conn net.Conn) {
 		err := conn.Close()
 		if err != nil {
-
+			log.Println("Close connection due to error:", err)
 		}
 	}(conn)
 
@@ -83,14 +93,8 @@ func (s *Server) process(conn net.Conn) {
 			err = s.get(conn, r)
 		} else if op == 'D' {
 			err = s.del(conn, r)
-		} else {
-			log.Println("Close connection due to invalid operation:", op)
 		}
-		if err == io.EOF {
-			log.Println("Close connection due to EOF")
-			return
-		}
-		if err != nil {
+		if err != nil && err != io.EOF {
 			log.Println("Close connection due to error:", err)
 			return
 		}
